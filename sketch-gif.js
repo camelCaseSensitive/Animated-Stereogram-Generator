@@ -357,11 +357,27 @@ async function saveAsGif() {
 
   gif.on('progress', p => console.log(`GIF progress: ${Math.round(p * 100)}%`));
 
-  gif.on('finished', blob => {
-    saveAs(blob, 'animated_stereogram.gif');
-    console.log('✅ GIF saved.');
-  });
+  // gif.on('finished', blob => {
+  //   saveAs(blob, 'animated_stereogram.gif');
+  //   console.log('✅ GIF saved.');
+  // });
 
+  // gif.render();
+  gif.on('finished', blob => {
+    loadingContainer.hide();
+    loadingText.hide();
+  
+    // Native save
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'animated_stereogram.gif';
+    a.click();
+    URL.revokeObjectURL(url);
+  
+    console.log("✅ GIF saved successfully!");
+  });
+  
   gif.render();
 }
 
