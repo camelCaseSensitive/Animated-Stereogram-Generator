@@ -334,50 +334,48 @@ function saveAllFrames() {
 
 // --- Save as GIF (gif.js) ---
 async function saveAsGif() {
-  if (frames.length === 0) {
-    alert("Please generate an animation first.");
+  if (!frames || frames.length === 0) {
+    alert("Please generate an animated stereogram first!");
     return;
   }
 
-  let fps = parseFloat(prompt("Enter frame rate (frames per second):", "10"));
+  // Ask the user for frame rate
+  const fps = parseFloat(prompt("Enter desired frame rate (frames per second):", "10"));
   if (isNaN(fps) || fps <= 0) {
     alert("Invalid frame rate.");
     return;
   }
 
+  console.log(`🎬 Exporting GIF at ${fps} FPS...`);
+
   const gif = new GIF({
     workers: 2,
     quality: 10,
-    workerScript: 'assets/gif.worker.js'
+    workerScript: "assets/gif.worker.js"
   });
 
+  // Add each frame
   for (let i = 0; i < frames.length; i++) {
-    gif.addFrame(frames[i].canvas, { delay: 1000 / fps });
+    gif.addFrame(frames[i].elt, { delay: 1000 / fps });
   }
 
-  gif.on('progress', p => console.log(`GIF progress: ${Math.round(p * 100)}%`));
+  // Optional: show console progress only (no missing DOM elements)
+  gif.on("progress", (p) => {
+    console.log(`Encoding progress: ${Math.round(p * 100)}%`);
+  });
 
-  // gif.on('finished', blob => {
-  //   saveAs(blob, 'animated_stereogram.gif');
-  //   console.log('✅ GIF saved.');
-  // });
+  // When finished, trigger browser download
+  gif.on("finished", (blob) => {
+    console.log("✅ GIF encoding complete. Downloading...");
 
-  // gif.render();
-  gif.on('finished', blob => {
-    loadingContainer.hide();
-    loadingText.hide();
-  
-    // Native save
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = 'animated_stereogram.gif';
+    a.download = "animated_stereogram.gif";
     a.click();
     URL.revokeObjectURL(url);
-  
-    console.log("✅ GIF saved successfully!");
   });
-  
+
   gif.render();
 }
 
