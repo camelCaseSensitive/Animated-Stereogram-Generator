@@ -348,7 +348,7 @@ async function saveAsGif() {
   const gif = new GIF({
     workers: 2,
     quality: 10,
-    workerScript: 'https://cdn.jsdelivr.net/gh/jnordberg/gif.js/dist/gif.worker.js'
+    workerScript: 'assets/gif.worker.js'
   });
 
   for (let i = 0; i < frames.length; i++) {
